@@ -63,6 +63,17 @@ public class SceneObject : MonoBehaviour {
             showHint = false;
     }
 
+    public void DisableObject()
+    {
+        gameObject.SetActive(true);
+        disable = true;
+    }
+
+    public bool IsDisable()
+    {
+        return disable;
+    }
+
     public void AppearOnScene(int index)
     {
         this.index = index;
