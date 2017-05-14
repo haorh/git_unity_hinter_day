@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class SceneSwitcher:MonoBehaviour{
     void Start()
     {
         _scenePlacer = GameObject.FindObjectOfType<ScenePlacer>();
-        _sceneObjectManager = GameObject.FindObjectOfType<SceneObjectManager>();
+        _sceneObjectManager = GameObject.FindObjectOfType<SceneObjectManager>();        
     }
 
     public void TeleportPlayer(GameObject gameObject)

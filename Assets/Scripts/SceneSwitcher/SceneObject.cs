@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class SceneObject : MonoBehaviour {
     
     public string objectName;
     public MeshRenderer meshRenderer;
     
-    public List<ObjectData> objectData;
+    public SceneObjectData objectData;
 
     bool disable = false;
     int index = 0;
@@ -16,15 +17,7 @@ public class SceneObject : MonoBehaviour {
     Renderer renderer;
     GameObject player;
 
-    bool showHint = false;
-
-    [System.Serializable]    
-    public struct ObjectData
-    {
-        public bool enableOnScene;
-        public bool interactable;
-        public Material[] material;       
-    }
+    bool showHint = false;    
 
     void Start()
     {
@@ -50,12 +43,12 @@ public class SceneObject : MonoBehaviour {
 
     public bool IsInteractable()
     {
-        return objectData[index].interactable;
+        return objectData.objectData[index].interactable;
     }
 
     public void ShowIndicator()
     {
-        if (objectData[index].interactable && renderer.isVisible && Vector3.Distance(player.transform.position, transform.position) < 7)
+        if (objectData.objectData[index].interactable && renderer.isVisible && Vector3.Distance(player.transform.position, transform.position) < 7)
         {
             showHint = true;
         }
@@ -80,12 +73,12 @@ public class SceneObject : MonoBehaviour {
 
         if (!disable)
         {
-            gameObject.SetActive(objectData[index].enableOnScene);
+            gameObject.SetActive(objectData.objectData[index].enableOnScene);
 
             for (int i = 0; i < meshRenderer.materials.Length; i++)
             {
-                if (i <= objectData[index].material.Length - 1)
-                    meshRenderer.materials[i] = objectData[index].material[i];                
+                if (i <= objectData.objectData[index].material.Length - 1)
+                    meshRenderer.materials[i] = objectData.objectData[index].material[i];                
             }
         }
     }    
