@@ -11,14 +11,18 @@ public class InventoryItem : Item {
 
     public Color selectedColour = Color.green;
     public Color deselectedColour = Color.white;
+
+    [Header("Its position in inventory")]
+    public Vector2 inventoryPosition;
     // Use this for initialization
     void Start () {
-		
-	}
+        inventoryPosition = new Vector2(-1, -1);
+
+    }
 	
 	protected override void OnInitialize(Item item)
     {
-        Debug.Log("Subclass initialize");
+        //Debug.Log("Subclass initialize");
         image.sprite = item.sprite;
     }
 
@@ -30,4 +34,10 @@ public class InventoryItem : Item {
     {
         baseImage.color = deselectedColour;
     }
+
+    //public void SetPosition(Vector2 position)
+    //{
+    //    this.position.x = position.x;
+    //    this.position.y = position.y;
+    //}
 }

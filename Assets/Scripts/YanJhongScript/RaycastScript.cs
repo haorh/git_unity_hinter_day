@@ -6,27 +6,32 @@ using UnityEngine.UI;
 
 public class RaycastScript : MonoBehaviour
 {
+    [Header("Attribute")]
     public bool raycastInfinite = false;
     public float raycastDistance = 100.0f;
 
     public enum RaycastMethod { FromCentre, FromMouse };
     public RaycastMethod raycastMethod = RaycastMethod.FromCentre;
-
-    public List<RaycastHit> prevHitInfo;
-
+    
     public LayerMask collisionLayer;
+
     Ray ray;
 
     //---- UI
+    [Header("Display Result")]
     public GameObject interactiveIndicator;
     public Text indicatorText;
+    public List<GameObject> hitList;
 
     //--- incase there is multiple object in one raycast
-    Vector3 prevPosition, prevDirection;
+    [Header("Multiple Object detection")]
     public float updateSecond = 2;
+
+    [Header("Data, should be private")]
+    Vector3 prevPosition, prevDirection;    
     public bool inCoroutine = false;
     public int lastChosenIndex = 0;
-    public bool cameraMoved = false, oneItem;
+    public bool cameraMoved = false, detectedOneItem;
     public GameObject prevObject;
 
     void Start()
@@ -61,12 +66,14 @@ public class RaycastScript : MonoBehaviour
             hitInfo = Physics.RaycastAll(ray, Mathf.Infinity, collisionLayer);
 
 
-        CheckForCondition(currentPosition, forward);
+        CheckCameraMoved(currentPosition, forward);
 
         ChooseOneObj(hitInfo, out currentObject, currentPosition);
         DeactivatePrevObj(currentObject);
         ActivateObj(currentObject);
         UpdateObj(currentObject);
+        UpdateUI();
+        RecordList(hitInfo);
     }
 
     void ChooseOneObj(RaycastHit[] hitInfo, out GameObject currentObj, Vector3 currentPosition)
@@ -75,7 +82,7 @@ public class RaycastScript : MonoBehaviour
         if (hitInfo.Length == 1)
         {
             currentObj = hitInfo[0].collider.gameObject;
-            oneItem = true;
+            detectedOneItem = true;
             //Debug.Log("Hit one");
         }
         else if (hitInfo.Length > 1)
@@ -89,7 +96,7 @@ public class RaycastScript : MonoBehaviour
             }          
                 
 
-            oneItem = false;            
+            detectedOneItem = false;            
             currentObj = hitInfo[Mathf.Min(lastChosenIndex, hitInfo.Length - 1)].collider.gameObject;
             //Debug.Log("Hit multiple");
         }
@@ -99,8 +106,11 @@ public class RaycastScript : MonoBehaviour
     {
         if (currentObj == prevObject)
             return;
-        if (prevObject == null)
+        if (prevObject == null)//1st time enter or item is destroyed
+        {
+            //UpdateUI(false, null);
             return;
+        }
 
         if (prevObject.GetComponent<HighlightItem>())
             prevObject.GetComponent<HighlightItem>().Unhighlight();
@@ -108,7 +118,7 @@ public class RaycastScript : MonoBehaviour
         if (prevObject.GetComponent<PickableItem>())
             prevObject.GetComponent<PickableItem>().Undetected();
 
-        UpdateUI(false, null);
+        //UpdateUI(false, null);
     }
 
     void ActivateObj(GameObject currentObj)
@@ -116,7 +126,10 @@ public class RaycastScript : MonoBehaviour
         if (currentObj == prevObject)
             return;
         if (currentObj == null)
+        {
+            //UpdateUI(false, currentObj);
             return;
+        }
 
         if (currentObj.GetComponent<HighlightItem>())
             currentObj.GetComponent<HighlightItem>().Highlight();
@@ -124,7 +137,7 @@ public class RaycastScript : MonoBehaviour
         if (currentObj.GetComponent<PickableItem>())
             currentObj.GetComponent<PickableItem>().Detected();
 
-        UpdateUI(true, currentObj);
+        //UpdateUI(true, currentObj);
     }
 
     void UpdateObj(GameObject currentObj)
@@ -132,14 +145,18 @@ public class RaycastScript : MonoBehaviour
         prevObject = currentObj;
     }
 
-    void UpdateUI(bool show, GameObject currentObj)
+    void UpdateUI()
     {
+        bool show = false;
+        if (prevObject != null)
+            show = true;
+
         if(show)
         {
             interactiveIndicator.SetActive(true);
-            var pos = Camera.main.WorldToScreenPoint(currentObj.transform.position);
+            var pos = Camera.main.WorldToScreenPoint(prevObject.transform.position);
             interactiveIndicator.transform.position = pos;
-            indicatorText.text = currentObj.name;
+            indicatorText.text = prevObject.name;
         }
         else
         {
@@ -147,51 +164,51 @@ public class RaycastScript : MonoBehaviour
         }
     }
 
-    void DeactivatePrevList(RaycastHit[] hitInfo)
-    {
-        List<int> index = new List<int>();
+    //void DeactivatePrevList(RaycastHit[] hitInfo)
+    //{
+    //    List<int> index = new List<int>();
 
-        for (int x = 0; x < prevHitInfo.Count; x++)
-        {
-            var found = false;
-            for (int y = 0; y < hitInfo.Length; y++)
-            {
-                if (prevHitInfo[x].collider.gameObject == hitInfo[x].collider.gameObject)
-                {
-                    found = true;
-                    break;
-                }
-            }
+    //    for (int x = 0; x < prevHitInfo.Count; x++)
+    //    {
+    //        var found = false;
+    //        for (int y = 0; y < hitInfo.Length; y++)
+    //        {
+    //            if (prevHitInfo[x].collider.gameObject == hitInfo[x].collider.gameObject)
+    //            {
+    //                found = true;
+    //                break;
+    //            }
+    //        }
 
-            if (!found)
-            {
-                var obj = prevHitInfo[x].collider.gameObject;
-                if (obj.GetComponent<HighlightItem>())
-                    obj.GetComponent<HighlightItem>().Unhighlight();
+    //        if (!found)
+    //        {
+    //            var obj = prevHitInfo[x].collider.gameObject;
+    //            if (obj.GetComponent<HighlightItem>())
+    //                obj.GetComponent<HighlightItem>().Unhighlight();
 
-                if (obj.GetComponent<PickableItem>())
-                    obj.GetComponent<PickableItem>().Undetected();
-            }
-        }
-    }
+    //            if (obj.GetComponent<PickableItem>())
+    //                obj.GetComponent<PickableItem>().Undetected();
+    //        }
+    //    }
+    //}
 
-    void ActivateList(RaycastHit[] hitInfo)
-    {
-        for (int x = 0; x < hitInfo.Length; x++)
-        {
-            var obj = hitInfo[x].collider.gameObject;
-            if (obj.GetComponent<HighlightItem>())
-                obj.GetComponent<HighlightItem>().Highlight();
+    //void ActivateList(RaycastHit[] hitInfo)
+    //{
+    //    for (int x = 0; x < hitInfo.Length; x++)
+    //    {
+    //        var obj = hitInfo[x].collider.gameObject;
+    //        if (obj.GetComponent<HighlightItem>())
+    //            obj.GetComponent<HighlightItem>().Highlight();
 
-            if (obj.GetComponent<PickableItem>())
-                obj.GetComponent<PickableItem>().Detected();
-        }
-    }
+    //        if (obj.GetComponent<PickableItem>())
+    //            obj.GetComponent<PickableItem>().Detected();
+    //    }
+    //}
 
-    void UpdateList(RaycastHit[] hitInfo)
-    {
-        prevHitInfo = hitInfo.ToList();
-    }
+    //void UpdateList(RaycastHit[] hitInfo)
+    //{
+    //    prevHitInfo = hitInfo.ToList();
+    //}
 
     IEnumerator ChooseAmongList(int length)
     {
@@ -208,16 +225,16 @@ public class RaycastScript : MonoBehaviour
 
                 timer = 0;
             }
-            else if (oneItem)//if there is only one item collided, break      
+            else if (detectedOneItem)//if there is only one item collided, break      
             {
-                Debug.Log("Brokw coroutine");
+                //Debug.Log("Brokw coroutine");
                 break;
             }
             yield return null;
         }
         inCoroutine = false;
     }
-    void CheckForCondition(Vector3 currentPosition, Vector3 direction)
+    void CheckCameraMoved(Vector3 currentPosition, Vector3 direction)
     {
         if (prevPosition != currentPosition || prevDirection != direction)
             cameraMoved = true;
@@ -226,5 +243,17 @@ public class RaycastScript : MonoBehaviour
 
         prevDirection = direction;
         prevPosition = currentPosition;
+    }
+
+    void RecordList(RaycastHit[] list)
+    {
+        if (hitList == null)
+            hitList = new List<GameObject>();
+
+        hitList.Clear();
+
+        var temp = list.ToList();
+        foreach (RaycastHit hit in list)
+            hitList.Add(hit.collider.gameObject);
     }
 }

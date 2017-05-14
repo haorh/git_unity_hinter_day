@@ -14,23 +14,29 @@ public class PickableItem : Item{
 
     private void Update()
     {
-        if (debugMode)
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                if (!detected)
-                {
-                    //Debug.Log("Selected this = " + gameObject.name + ", press E again to collect");
-                    Detected();
-                }
-                else
-                    CollectedItem();
-            }
-            else if (Input.GetKeyDown(KeyCode.F))
-            {
-                Undetected();
-            }
+            if (detected)
+                CollectedItem();
         }
+
+        //if (debugMode)
+        //{
+        //    if (Input.GetKeyDown(KeyCode.E))
+        //    {
+        //        if (!detected)
+        //        {
+        //            //Debug.Log("Selected this = " + gameObject.name + ", press E again to collect");
+        //            Detected();
+        //        }
+        //        else
+        //            CollectedItem();
+        //    }
+        //    else if (Input.GetKeyDown(KeyCode.F))
+        //    {
+        //        Undetected();
+        //    }
+        //}
     }
     public void Detected()
     {
@@ -52,13 +58,13 @@ public class PickableItem : Item{
     }
     public void Undetected()
     {
-        Debug.Log("Unselected this = " + gameObject.name + "+++++++++++++ undetect+++++++++");
+        //Debug.Log("Unselected this = " + gameObject.name + "+++++++++++++ undetect+++++++++");
         detected = false;
     }
 
     void SaveToInventory()
     {
-        Debug.Log("Sending item = " + itemName + " with description = " + description);
+        //Debug.Log("Sending item = " + itemName + " with description = " + description);
         inventoryManager.Add(this);
     }
 }

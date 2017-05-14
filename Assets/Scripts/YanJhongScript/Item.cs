@@ -14,7 +14,7 @@ public class Item : MonoBehaviour
 
     public void Initialize(Item item)
     {
-        Debug.Log("Base initialize");
+        //Debug.Log("Base initialize");
         id = item.id;
         itemName = item.itemName;
         description = item.description;
