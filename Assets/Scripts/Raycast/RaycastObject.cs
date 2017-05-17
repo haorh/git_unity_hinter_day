@@ -37,7 +37,7 @@ public class RaycastObject : MonoBehaviour {
                 if (sceneObject.IsInteractable())
                 {
                     interactiveIndicator.SetActive(true);
-                    cursor.SetActive(false);
+                    //cursor.SetActive(false);
                     pos = Camera.main.WorldToScreenPoint(hit.collider.gameObject.transform.position);
                     interactiveIndicator.transform.position = pos;
                     indicatorText.text = sceneObject.GetName();
@@ -46,7 +46,7 @@ public class RaycastObject : MonoBehaviour {
         }
         else
         {
-            cursor.SetActive(true);
+            //cursor.SetActive(true);
             interactiveIndicator.SetActive(false);
             objectDetected = false;
             sceneObject = null;
