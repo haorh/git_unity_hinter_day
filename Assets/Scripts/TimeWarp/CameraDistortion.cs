@@ -4,7 +4,7 @@ using UnityStandardAssets.ImageEffects;
 
 public class CameraDistortion : MonoBehaviour {
 
-    enum State
+    public enum State
     {
         idle, start, revert
     }
@@ -32,18 +32,18 @@ public class CameraDistortion : MonoBehaviour {
     float _startTime = 0;
 
 	void Update () {
-		if(Input.GetMouseButtonDown(0) && _state == State.idle)
-        {
-            _startTime = Time.time;
-            _state = State.start;
-            _warpSound.Play();
-        }
-
         if (_state == State.start)
             StartWarpEffect();
         else if (_state == State.revert)
             RevertWarpEffect();
 	}
+
+    public void PlayWarpEffect()
+    {
+        _startTime = Time.time;
+        _state = State.start;
+        _warpSound.Play();
+    }
 
     void StartWarpEffect()
     {        
@@ -86,5 +86,10 @@ public class CameraDistortion : MonoBehaviour {
     {
         yield return new WaitForSeconds(_endDuration / 8);
         GameObject.FindObjectOfType<SceneSwitcher>().TeleportPlayer(character);
+    }
+
+    public State GetTimeWarpState()
+    {
+        return _state;
     }
 }
