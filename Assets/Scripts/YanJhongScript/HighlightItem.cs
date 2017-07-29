@@ -6,8 +6,9 @@ public class HighlightItem : MonoBehaviour {
     public enum HighLightMethod{ ChangeColour,HighLightBorder};
     public HighLightMethod highlightMethod = HighLightMethod.ChangeColour;
 
-    public Color highlightColour = Color.green;
-    Color defaultColour = Color.white;
+    //public Color highlightColour = Color.green;
+    //Color defaultColour = Color.white;
+
     [Header("Data, should be private")]
     public bool detected;
     public bool detectThisFrame;

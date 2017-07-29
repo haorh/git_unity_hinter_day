@@ -252,7 +252,7 @@ public class RaycastScript : MonoBehaviour
 
         hitList.Clear();
 
-        var temp = list.ToList();
+        //var temp = list.ToList();
         foreach (RaycastHit hit in list)
             hitList.Add(hit.collider.gameObject);
     }

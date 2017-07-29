@@ -2,39 +2,87 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.ComponentModel;
 
-public class InventoryItem : Item {
+public class InventoryItem : Item, INotifyPropertyChanged
+{
     [Header("Reference to own Object")]
-    public Image baseImage;
-    public Image image;
+
+    public int amount;
+    public bool infinityUsage = false;
+
+    //public Sprite image;
     public Button button;
 
-    public Color selectedColour = Color.green;
-    public Color deselectedColour = Color.white;
+    bool isSelected;
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected void OnPropertyChanged(string propertyName)
+    {
+        OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        //Debug.Log("propertyname is = " + e.PropertyName);
+        PropertyChangedEventHandler handler = PropertyChanged;
+        if (handler != null)
+            handler(this, e);
+    }
+    
+    //public Sprite Image
+    //{
+    //    get
+    //    {
+    //        return image;
+    //    }
+    //    set
+    //    {
+    //        image = value;
+    //        OnPropertyChanged("Image");
+    //    }
+    //}
+
+    public bool IsSelected
+    {
+        get
+        {
+            return isSelected;
+        }
+        set
+        {
+            isSelected = value;
+            OnPropertyChanged("IsSelected");
+        }
+    }
 
     [Header("Its position in inventory")]
     public Vector2 inventoryPosition;
     // Use this for initialization
     void Start () {
         inventoryPosition = new Vector2(-1, -1);
-
     }
 	
 	protected override void OnInitialize(Item item)
     {
-        //Debug.Log("Subclass initialize");
-        image.sprite = item.sprite;
+        OnPropertyChanged("Image");
+        
     }
 
     public void Selected()
     {
-        baseImage.color = selectedColour;
+        IsSelected = true;
+        
     }
     public void Deselected()
     {
-        baseImage.color = deselectedColour;
+        IsSelected = false;        
     }
-
+    public void Used()
+    {
+        amount--;
+    }
     //public void SetPosition(Vector2 position)
     //{
     //    this.position.x = position.x;

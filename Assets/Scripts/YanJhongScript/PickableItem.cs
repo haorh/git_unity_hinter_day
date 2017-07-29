@@ -19,7 +19,10 @@ public class PickableItem : Item{
             if (detected)
                 CollectedItem();
         }
-
+        else if (Input.GetKeyDown(KeyCode.Y))
+        {
+            DebugLog();
+        }
         //if (debugMode)
         //{
         //    if (Input.GetKeyDown(KeyCode.E))
@@ -41,7 +44,7 @@ public class PickableItem : Item{
     public void Detected()
     {
         detected = true;
-        Debug.Log("Selected this = " + gameObject.name + ", press E again to collect");
+        //Debug.Log("Selected this = " + gameObject.name + ", press E again to collect");
     }
     public void CollectedItem()
     {
@@ -66,5 +69,16 @@ public class PickableItem : Item{
     {
         //Debug.Log("Sending item = " + itemName + " with description = " + description);
         inventoryManager.Add(this);
+    }
+
+    protected override void OnInitialize(Item item)
+    {
+        //if (GetComponent<IOnUse>() != null)
+        //{            
+        //    EasyNS.Easy.AddComponent(gameObject, GetComponent(typeof(IOnUse)));
+        //    Debug.Log("Yes");
+        //}
+        //else
+        //    Debug.LogError("No item baheviour detected");
     }
 }
